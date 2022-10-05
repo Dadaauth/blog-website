@@ -1,0 +1,16 @@
+<%-include("partials/header")-%>
+<%foundPosts.forEach(function(found){%>
+    <h1>
+        <%=found.title%>
+    </h1>
+    <img src="images/<%=found.imageUrl%>" width="25rem">
+    <p>
+        <%=found.content%>
+    </p>
+        <button>
+            <a href="/delete/<%=found._id%>">Delete</a>
+        </button>
+        
+<%});%>
+
+<%-include("partials/footer")-%>
