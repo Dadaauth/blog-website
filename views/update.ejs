@@ -1,0 +1,23 @@
+<%-include("partials/header")-%>
+
+<%if(typeof postDetails !== "undefined"){
+    var value1 = postDetails.title;
+    var value2 = postDetails.imageUrl;
+    var value3 = postDetails.content;
+    var actionLink = postDetails._id;
+} else{
+    value1 = "";
+    value2 = "";
+    value3 = "";
+    actionLink = "";
+}%>
+
+    <form action="/update/<%=actionLink%>"  enctype="multipart/form-data"  method="post" autocomplete="off">
+    <input type="text" name="title" value="<%=value1%>" required>
+    <img src="/images/<%=postDetails.imageUrl%>" alt="">
+    <input type="file" name="imageUrl" value="<%=value2%>">   
+    <input type="text" name="content" value="<%=value3%>" id="" required>
+    <button type="submit" value="upload">Update</button>
+</form>
+
+<%-include("partials/footer")-%>

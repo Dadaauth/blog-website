@@ -10,8 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.0",
+    "connect-busboy": "^1.0.0",
+    "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
-    "mongoose": "^6.6.4"
+    "express-session": "^1.17.3",
+    "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "mongoose": "^6.6.4",
+    "mongoose-findorcreate": "^3.0.0",
+    "passport": "^0.6.0",
+    "passport-local-mongoose": "^7.1.2",
+    "sys": "^0.0.1"
   }
 }

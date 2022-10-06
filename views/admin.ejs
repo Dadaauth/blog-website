@@ -1,0 +1,23 @@
+<%-include("partials/header")-%>
+<%let reverse = foundPosts.reverse();%>
+<%reverse.forEach(function(found){%>
+    <h1>
+        <%=found.title%>
+    </h1>
+    <img src="/images/<%=found.imageUrl%>" width="25rem">
+    <p>
+        <%=found.content%>
+    </p>
+    <br/>
+        <a href="/posts/<%=found._id%>">Read More</a>
+        <button>
+            <a href="/delete/<%=found._id%>">Delete</a>
+        </button>
+        <button>
+            <a href="/update/<%=found._id%>">Update</a>
+        </button>
+        
+<%});%>
+        <button><a href="/compose">Add new post</a></button>
+        <a href="/"> Go to home</a>
+<%-include("partials/footer")-%>
