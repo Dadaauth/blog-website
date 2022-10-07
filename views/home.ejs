@@ -1,4 +1,12 @@
 <%-include("partials/header")-%>
+<%if(authenticated === true){%>
+    <a href="/profile">Profile</a>
+    <a href="/admin">Go to admin dashboard</a>
+<%} else {%>
+    <a href="/register">Register here</a>
+<a href="/login">login here</a>
+<%}%>
+
 <%let reverse = foundPosts.reverse();%>
 <%reverse.forEach(function(found){%>
     <h1>
@@ -12,5 +20,5 @@
         <a href="/posts/<%=found._id%>">Read More</a>
         
 <%});%>
-<a href="/admin">Go to admin dashboard</a>
+
 <%-include("partials/footer")-%>

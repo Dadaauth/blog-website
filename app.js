@@ -13,25 +13,31 @@
 
     const app = express();
   
-////set view engine to ejs
-app.set("view engine", "ejs");
-///use body parser
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-////use express static for external files like css files
-app.use(express.static("public"));
-app.use(session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false
-}));
+    ////set view engine to ejs
+    app.set("view engine", "ejs");
 
-app.use(passport.initialize());
-app.use(passport.session());
-/////connect to mongoose
-mongoose.connect("mongodb://localhost:27017/blogDB");
-//create mongoose schema and model
+    ///use body parser
+    app.use(bodyParser.urlencoded({
+        extended: true
+    }));
+
+
+    ////use express static for external files like css files
+    app.use(express.static("public"));
+    app.use(session({ /////for session creation needed for authentication.
+        secret: process.env.SECRET,
+        resave: false,
+        saveUninitialized: false
+    }));
+
+
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+
+    /////connect to mongoose
+    mongoose.connect("mongodb://localhost:27017/blogDB");
+//create posts schema
     const blogSchema = new mongoose.Schema({
         title:  {
             type: String,
@@ -46,6 +52,7 @@ mongoose.connect("mongodb://localhost:27017/blogDB");
         }
     });
 
+    /////create users schema
     const userSchema = new mongoose.Schema({
         username: String,
         email: String,
@@ -62,7 +69,7 @@ mongoose.connect("mongodb://localhost:27017/blogDB");
 
 passport.serializeUser(function(user, cb) {
     process.nextTick(function() {
-      return cb(null, {
+            return cb(null, {
         id: user.id,
         username: user.username,
         email: user.email,
@@ -71,6 +78,7 @@ passport.serializeUser(function(user, cb) {
         facebookName: user.facebookName,
         googleId: user.googleId
       });
+      
     });
   });
   
@@ -81,26 +89,26 @@ passport.serializeUser(function(user, cb) {
   });
 
 
+
+
+
+
+
+
+  //get home
     app.get("/", function(req, res){
         Blog.find(function(err, foundPosts){
             if(err){
                 console.log("Error fetching posts!");
             } else {
-               res.render("home", {foundPosts : foundPosts});
-            }
-           
-          
-        });
-    });
-
- 
-///admin area
-    app.get("/admin", function(req, res){
-        Blog.find(function(err, foundPosts){
-            if(err){
-                console.log("Error fetching posts!");
-            } else {
-               res.render("admin", {foundPosts : foundPosts});
+               if(req.isAuthenticated()){
+                res.render("home", {foundPosts : foundPosts, authenticated: true});
+               } else {
+                res.render("home", {foundPosts : foundPosts, authenticated: false});
+               }
+                    
+                
+               
             }
            
           
@@ -108,7 +116,13 @@ passport.serializeUser(function(user, cb) {
     });
 
 
-////compose articles
+
+
+
+
+
+
+        ///////compose articles
     app.get("/compose", function(req, res){
             res.render("compose");
         });
@@ -117,22 +131,22 @@ passport.serializeUser(function(user, cb) {
         /////handle file upload (image)
         const options = {
             filter: function ({name, originalFilename, mimetype}) {
-              // keep only images
-              return mimetype && mimetype.includes("image");
+            // keep only images
+            return mimetype && mimetype.includes("image");
             },
             uploadDir: __dirname + "/public/images"
-          };
+        };
         const form = formidable(options);
         form.on("file", (field, file) => {
             
             fs.rename(
-              file.filepath,
-              form.uploadDir + "/" + file.originalFilename,
-              () => {
+            file.filepath,
+            form.uploadDir + "/" + file.originalFilename,
+            () => {
                 
-              }
+            }
             );
-          });
+        });
         form.parse(req, (err, fields, files) => {
             ////save form data to database
             const title = fields.title;
@@ -154,34 +168,41 @@ passport.serializeUser(function(user, cb) {
         
     });
 
-///update articles
+
+
+
+
+
+
+
+    /////////////update articles
     app.get("/update/:articleId", function(req, res){
         const articleID = req.params.articleId;
         Blog.findById({_id: articleID}, function(err, foundPost){
             res.render("update", {postDetails: foundPost})
         });
-    });
+        });
 
     app.post("/update/:articleId", function(req, res){
-         /////handle file upload (image)
-         const options = {
+        /////handle file upload (image)
+        const options = {
             filter: function ({name, originalFilename, mimetype}) {
-              // keep only images
-              return mimetype && mimetype.includes("image");
+            // keep only images
+            return mimetype && mimetype.includes("image");
             },
             uploadDir: __dirname + "/public/images"
-          };
+        };
         const form = formidable(options);
         form.on("file", (field, file) => {
             
             fs.rename(
-              file.filepath,
-              form.uploadDir + "/" + file.originalFilename,
-              () => {
+            file.filepath,
+            form.uploadDir + "/" + file.originalFilename,
+            () => {
                 
-              }
+            }
             );
-          });
+        });
         form.parse(req, (err, fields, files) => {
             if (typeof files.imageUrl !== "undefined"){
                 ////save form data to database
@@ -209,8 +230,14 @@ passport.serializeUser(function(user, cb) {
                 });
             }
             
-      });
     });
+    });
+
+
+
+
+
+
 
 ////display a particular article
     app.get("/posts/:articleId", function(req, res){
@@ -224,6 +251,11 @@ passport.serializeUser(function(user, cb) {
             
         });
     });
+
+
+
+
+
 
 //////delete articles
     app.get("/delete/:articleId", function(req, res){
@@ -240,44 +272,96 @@ passport.serializeUser(function(user, cb) {
 
 
 
-    // app.get('/aaaa', (req, res) => {
-    //     res.send(`
-    //       <h2>With <code>"express"</code> npm package</h2>
-    //       <form action="/api/upload" enctype="multipart/form-data" method="post">
-    //         <div>Text field title: <input type="text" name="title" /></div>
-    //         <div>File: <input type="file" name="someExpressFiles" multiple="multiple" /></div>
-    //         <input type="submit" value="Upload" />
-    //       </form>
-    //     `);
-    //   });
-      
-    //   app.post('/api/upload', (req, res, next) => {
+
+
+
+
+
+    ///admin area
+        app.get("/admin", function(req, res){
+        if(!req.isAuthenticated()){
+            res.redirect("/login");
+        } else {
+            Blog.find(function(err, foundPosts){
+                if(err){
+                    console.log("Error fetching posts!");
+                } else {
+                res.render("admin", {foundPosts : foundPosts});
+                }
+            
+            
+            });
+        
+        }
+            
+        });
+
+
+
+
+    //////Login Page
+        
+
+        app.get("/login", function(req, res){
+            res.render("login");
+        });
+
+        app.post("/login", function(req, res, next){
+            const user = new User({
+                username: req.body.username,
+                password: req.body.password
+            });
+            req.login(user, function(err){
+                if(err){
+                    console.log(err);
+                } else {
+                    passport.authenticate("local", { failureRedirect: '/login-err', failureMessage: true })(req, res, function(err){
+                        res.redirect("/admin");
        
-    //     const form = formidable({ uploadDir: __dirname + "/images"});
-    //     form.on("file", (field, file) => {
-    //         fs.rename(
-    //           file.filepath,
-    //           form.uploadDir + "/" + file.originalFilename,
-    //           () => {
-           
-    //           }
-    //         );
-    //       });
-    //     form.parse(req, (err, fields, files) => {
-    //       if (err) {
-    //         next(err);
-    //         return;
-    //       }
-         
-    //       res.json({ fields, files });
-    //     });
-    //   });
+                   
+                    });
+                }
+            });
+        });
+        ////display error message for login.
+        app.get("/login-err", function(req, res){
+            const error_msg = "Incorrect User Details";
+            res.render("login", {errorMessage: error_msg});
+        });
+
+        /////Register Page
+       
+        app.get("/register", function(req, res){
+            res.render("register");
+        })
+
+        app.post("/register", function(req, res){
+            User.register({username: req.body.username, email: req.body.email}, req.body.password, function(err, user){
+                if(err){
+                    console.log(err);
+                    res.redirect("/register");
+                } else{
+                    passport.authenticate("local")(req, res, function(){
+                        res.redirect("/admin");
+                    });
+                }
+            });
+        });
 
 
 
 
+    ///logout
+        app.get("/logout", function(req, res){
+            req.logout(function(err) {
+            if (err) { return next(err); }
+            });
+            res.redirect("/");
+        });
 
 
+
+        
     app.listen(3000, function(){
         console.log("Server running on port 3000!");
     });

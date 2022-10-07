@@ -1,8 +1,13 @@
-<%-include("header")-%>
+<%-include("partials/header")-%>
+
+<% if(typeof errorMessage !== "undefined"){%>
+    <p><%=errorMessage%></p>    
+<%}%>
     <h2>login</h2>
     <form action="/login" method="post">
         <input type="text" name="username" id="">
         <input type="password" name="password" id="">
+        <button type="submit">login</button>
     </form>
 
-<%-include("footer")-%>
+<%-include("partials/footer")-%>
