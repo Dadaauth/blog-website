@@ -1,13 +1,28 @@
 <%-include("partials/header")-%>
 <a href="/logout">Logout</a>
+
 <%let reverse = foundPosts.reverse();%>
 <%reverse.forEach(function(found){%>
     <h1>
         <%=found.title%>
     </h1>
+    <%if(typeof found.publishedDate !== "undefined"){%>
+        <span>Published <%=found.publishedDate%></span>
+    <%}%> 
+    <%if(typeof found.updatedDate !== "undefined"){%>
+        <span>Updated <%=found.updatedDate%></span>
+    <%}%>   
+    <br/>
+<% if(typeof found.imageUrl !== "undefined"){%>
     <img src="/images/<%=found.imageUrl%>" width="25rem">
+<%} else {%>
+    <img src="/images/<%=found.imageUrl%>" style="display:none" width="25rem">
+<%}%>
+   
+
+    
     <p>
-        <%=found.content%>
+        <%=found.content.substring(0,100).trimEnd() + " ..."%>
     </p>
     <br/>
         <a href="/posts/<%=found._id%>">Read More</a>

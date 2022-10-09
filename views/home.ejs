@@ -1,24 +1,40 @@
 <%-include("partials/header")-%>
 <%if(authenticated === true){%>
-    <a href="/profile">Profile</a>
+    <a href="/user/<%=userId%>">Profile</a>
     <a href="/admin">Go to admin dashboard</a>
 <%} else {%>
     <a href="/register">Register here</a>
 <a href="/login">login here</a>
 <%}%>
 
-<%let reverse = foundPosts.reverse();%>
+<%const reverse = foundPosts.reverse();%>
 <%reverse.forEach(function(found){%>
+    <br/>
+    <%if(typeof found.publishedDate !== "undefined"){%>
+        <span>Published <%=found.publishedDate%></span>
+    <%}%> 
+    <%if(typeof found.updatedDate !== "undefined"){%>
+        <span>Updated <%=found.updatedDate%></span>
+    <%}%>   
+    <br/>
+    <% if(typeof found.imageUrl !== "undefined"){%>
+        <img src="/images/<%=found.imageUrl%>" width="25rem">
+    <%} else {%>
+        <img src="/images/<%=found.imageUrl%>" style="display:none" width="25rem">
+    <%}%>
     <h1>
         <%=found.title%>
     </h1>
-    <img src="/images/<%=found.imageUrl%>" width="25rem">
+    <span> <%=found.username%></span>
     <p>
         <%=found.content.substring(0,100).trimEnd() + " ..." %>
     </p>
     <br/>
         <a href="/posts/<%=found._id%>">Read More</a>
-        
-<%});%>
+
+
+
+        <%});%>
+
 
 <%-include("partials/footer")-%>

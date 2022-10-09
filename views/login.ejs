@@ -3,11 +3,15 @@
 <% if(typeof errorMessage !== "undefined"){%>
     <p><%=errorMessage%></p>    
 <%}%>
+
     <h2>login</h2>
     <form action="/login" method="post">
         <input type="text" name="username" id="">
         <input type="password" name="password" id="">
-        <button type="submit">login</button>
+        <% if(typeof comeBackUrl !== "undefined"){%>
+     <input type="hidden" name="comeBackUrl" value="<%=comeBackUrl%>">
+<%}%>
+     <button type="submit">login</button>
     </form>
 
 <%-include("partials/footer")-%>
