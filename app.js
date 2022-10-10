@@ -124,30 +124,27 @@ passport.serializeUser(function(user, cb) {
 
   //get home
     app.get("/", function(req, res){
-        Blog.find(function(err, foundPosts){
+        var perPage = 3;
+            var page = req.query.page || 1;
+        Blog.find({})
+        .skip((perPage * page) - perPage)
+        .limit(perPage)
+        .exec(function(err,data){
             if(err){
                 console.log("Error fetching posts!");
             } else {
-                     
+                Blog.countDocuments({}).exec((err,count)=>{    
                if(req.isAuthenticated()){
-                res.render("home", {foundPosts : foundPosts, authenticated: true, userId: req.user.id});
+                res.render("home", {records: data,  current: page, pages: Math.ceil(count / perPage), authenticated: true, userId: req.user.id});
                } else {
-                res.render("home", {foundPosts : foundPosts, authenticated: false,});
+                res.render("home", {records: data,  current: page, pages: Math.ceil(count / perPage), authenticated: false,});
                }
            
-                
-               
-            }
-           
-          
+            });             
+            }         
+      
         });
     });
-
-
-
-
-
-
 
 
         ///////compose articles

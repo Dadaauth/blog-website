@@ -7,34 +7,65 @@
 <a href="/login">login here</a>
 <%}%>
 
-<%const reverse = foundPosts.reverse();%>
-<%reverse.forEach(function(found){%>
-    <br/>
-    <%if(typeof found.publishedDate !== "undefined"){%>
-        <span>Published <%=found.publishedDate%></span>
-    <%}%> 
-    <%if(typeof found.updatedDate !== "undefined"){%>
-        <span>Updated <%=found.updatedDate%></span>
-    <%}%>   
-    <br/>
-    <% if(typeof found.imageUrl !== "undefined"){%>
-        <img src="/images/<%=found.imageUrl%>" width="25rem">
-    <%} else {%>
-        <img src="/images/<%=found.imageUrl%>" style="display:none" width="25rem">
+<% if(records.length>0){%>
+    <%const reverse = records.reverse();%>
+    <%reverse.forEach(function(found){%>
+        <br/>
+        <%if(typeof found.publishedDate !== "undefined"){%>
+            <span>Published <%=found.publishedDate%></span>
+        <%}%> 
+        <%if(typeof found.updatedDate !== "undefined"){%>
+            <span>Updated <%=found.updatedDate%></span>
+        <%}%>   
+        <br/>
+        <% if(typeof found.imageUrl !== "undefined"){%>
+            <img src="/images/<%=found.imageUrl%>" width="25rem">
+        <%} else {%>
+            <img src="/images/<%=found.imageUrl%>" style="display:none" width="25rem">
+        <%}%>
+        <h1>
+            <%=found.title%>
+        </h1>
+        <span> <%=found.username%></span>
+        <p>
+            <%=found.content.substring(0,100).trimEnd() + " ..." %>
+        </p>
+        <br/>
+            <a href="/posts/<%=found._id%>">Read More</a>
+
+    <%});%>
+   <%} else {%>
+        <h1>No posts Found!</h1>
     <%}%>
-    <h1>
-        <%=found.title%>
-    </h1>
-    <span> <%=found.username%></span>
-    <p>
-        <%=found.content.substring(0,100).trimEnd() + " ..." %>
-    </p>
-    <br/>
-        <a href="/posts/<%=found._id%>">Read More</a>
 
-
-
-        <%});%>
-
-
+    
+    <% if (pages > 0) { %>
+        <ul>
+            <% if (current == 1) { %>
+                <li class="disabled"><a>First</a></li>
+            <% } else { %>
+                <li><a href="/?page=1">First</a></li>
+            <% } %>
+            <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+            <% if (i !== 1) { %>
+                <li class="disabled"><a>...</a></li>
+            <% } %>
+            <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                <% if (i == current) { %>
+                    <li class="active"><a><%= i %></a></li>
+                <% } else { %>
+                    <li><a href="/?page=<%= i %>"><%= i %></a></li>
+                <% } %>
+                <% if (i == Number(current) + 4 && i < pages) { %>
+                    <li class="disabled"><a>...</a></li>
+                <% } %>
+            <% } %>
+            <% if (current == pages) { %>
+                <li class="disabled"><a>Last</a></li>
+            <% } else { %>
+                <li><a href="/?page=<%= pages %>">Last</a></li>
+            <% } %>
+        </ul>
+    <% } %>
+    
 <%-include("partials/footer")-%>
