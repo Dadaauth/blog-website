@@ -9,7 +9,7 @@
                 <div class="col-md-4 col-lg-4 col-sm-6 col-6 postshover">
                     <a href="/posts/<%=found._id%>">
                      <% if(typeof found.imageUrl !== "undefined"){%>
-            <img src="/images/<%=found.imageUrl%>" width="250px" height="200px">
+            <img src="/images/<%=found.imageUrl%>"  class="image-home">
         <%} else {%>
             <img src="/images/<%=found.imageUrl%>" style="display:none">
         <%}%><br/>
