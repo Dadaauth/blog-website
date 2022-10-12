@@ -3,44 +3,6 @@
 <% if(records.length>0 & onedata.length>0){%>
 
     <div class="container">
-        <%onedata.forEach(function(onedata){%>
-        <div class="postshover">
-            <a href="/posts/<%=onedata._id%>">
-                <% if(typeof onedata.imageUrl !== "undefined"){%>
-       <img src="/images/<%=onedata.imageUrl%>"class="img-thumbnail" height="500px" >
-   <%} else {%>
-       <img src="/images/<%=onedata.imageUrl%>" style="display:none">
-   <%}%><br/>
-
-
-           <%if(typeof onedata.category !== "undefined"){%>
-       <small class="text-muted">Category : <%=onedata.category%> &#8942;</small>
-   <%}%> 
-     
-    <%if(typeof onedata.publishedDate !== "undefined" && typeof onedata.updatedDate === "undefined"){%>
-       <small class="text-muted">Published <%=onedata.publishedDate%></small>
-   <%}%> 
-     
-   <%if(typeof onedata.updatedDate !== "undefined"){%>
-       <small class="text-muted">Updated <%=onedata.updatedDate%></small>
-   <%}%>   
-   <small class="text-muted"> &#8942; <i class="bi bi-person-circle"></i> <%=onedata.username%></small>
-  
-   
-   <h2 class="title-marg+">
-       <strong>
-            <%=onedata.title%>
-   </strong>    
-   </h2>
-
-   <p class="lead">
-       <%=onedata.content .substring(0,100).trimEnd() + " ..." %>
-        
-   </p>
-       </a>
-    <%});%>
-     
-        </div> <br/><br/>
         <div class="row">
     <%records.forEach(function(found){%>
         <br/>  
