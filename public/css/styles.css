@@ -23,17 +23,31 @@ a:hover{
     
         }
         .text-muted{
-            font-size: 5px;
+            font-size: 8px;
         }   
         .lead{
             font-size: 10px;
         }
+        .dist{
+            display:none;
+        }
+        .dist2{
+            margin-left: 100px;
+        }
+        .home-content{
+            width: 80%;
+        }
     }
 
     @media only screen and (min-width: 600px) {
+        .text-muted{
+            font-size: 12px;
+        }  
         .image-home{
              width: 250px;
         height:200px;
         }   
+        .home-content{
+            width: 80%;
+        }
     }
-    

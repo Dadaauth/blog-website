@@ -37,7 +37,8 @@ const { Console } = require("console");
 
 
     /////connect to mongoose
-    mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
+    // mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
+    mongoose.connect("mongodb://localhost:27017/blogDB");
 //create posts schema
     const blogSchema = new mongoose.Schema({
         userId:  {
@@ -647,9 +648,8 @@ passport.serializeUser(function(user, cb) {
                 username: req.body.username,
                 password: req.body.password
                 
-            });console.log(req.body.username);
+            });
             User.countDocuments({username: req.body.username}).exec((err,count)=>{ 
-                console.log(count);
                if(count !== 0){
                      req.login(user, function(err){
                 if(err){
