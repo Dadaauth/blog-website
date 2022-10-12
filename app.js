@@ -37,8 +37,8 @@ const { Console } = require("console");
 
 
     /////connect to mongoose
-    // mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
-    mongoose.connect("mongodb://localhost:27017/blogDB");
+    mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
+    // mongoose.connect("mongodb://localhost:27017/blogDB");
 //create posts schema
     const blogSchema = new mongoose.Schema({
         userId:  {
