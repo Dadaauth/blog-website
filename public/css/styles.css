@@ -18,15 +18,15 @@ a:hover{
 
   @media only screen and (max-width: 600px) {
         .image-home{
-            width: 150px;
-        height: 150px;
+            width: 130px;
+        height: 110px;
     
         }
         .text-muted{
-            font-size: 10px;
+            font-size: 5px;
         }   
         .lead{
-            font-size: 13px;
+            font-size: 10px;
         }
     }
 
