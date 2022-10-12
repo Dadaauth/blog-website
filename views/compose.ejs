@@ -5,6 +5,14 @@
 <form action="/compose"  enctype="multipart/form-data"  method="post" autocomplete="off">
     <input type="text" name="title" required>  
     <input type="file" name="imageUrl">
+    <input list="browsers" name="category">
+  <datalist id="browsers">
+    <option value="Internet Explorer">
+    <option value="Firefox">
+    <option value="Chrome">
+    <option value="Opera">
+    <option value="Safari">
+  </datalist>
     <input type="text" name="content" required>
     <button type="submit" value="upload">Create new Post</button>
 </form>

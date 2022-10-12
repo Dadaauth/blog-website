@@ -16,7 +16,9 @@
             <%} else {%>
                 <img src="/images/<%=postDetail.imageUrl%>" style="display:none" width="25rem">
             <%}%>
-            <p>
+            <p><%if(typeof postDetail.category !== "undefined"){%>
+                <span>Category: <%=postDetail.category%></span>
+            <%}%> 
                 <%=postDetail.content%>
             </p>
             <h2>Comments Below</h2>

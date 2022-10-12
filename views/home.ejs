@@ -1,71 +1,127 @@
 <%-include("partials/header")-%>
-<%if(authenticated === true){%>
-    <a href="/user/<%=userId%>">Profile</a>
-    <a href="/admin">Go to admin dashboard</a>
-<%} else {%>
-    <a href="/register">Register here</a>
-<a href="/login">login here</a>
-<%}%>
 
-<% if(records.length>0){%>
-    <%const reverse = records.reverse();%>
-    <%reverse.forEach(function(found){%>
-        <br/>
-        <%if(typeof found.publishedDate !== "undefined"){%>
-            <span>Published <%=found.publishedDate%></span>
-        <%}%> 
-        <%if(typeof found.updatedDate !== "undefined"){%>
-            <span>Updated <%=found.updatedDate%></span>
-        <%}%>   
-        <br/>
-        <% if(typeof found.imageUrl !== "undefined"){%>
-            <img src="/images/<%=found.imageUrl%>" width="25rem">
-        <%} else {%>
-            <img src="/images/<%=found.imageUrl%>" style="display:none" width="25rem">
-        <%}%>
-        <h1>
-            <%=found.title%>
-        </h1>
-        <span> <%=found.username%></span>
-        <p>
-            <%=found.content.substring(0,100).trimEnd() + " ..." %>
-        </p>
-        <br/>
-            <a href="/posts/<%=found._id%>">Read More</a>
+<% if(records.length>0 & onedata.length>0){%>
 
+    <div class="container">
+        <%onedata.forEach(function(onedata){%>
+        <div class="postshover">
+            <a href="/posts/<%=onedata._id%>">
+                <% if(typeof onedata.imageUrl !== "undefined"){%>
+       <img src="/images/<%=onedata.imageUrl%>"class="img-thumbnail" height="500px" >
+   <%} else {%>
+       <img src="/images/<%=onedata.imageUrl%>" style="display:none">
+   <%}%><br/>
+
+
+           <%if(typeof onedata.category !== "undefined"){%>
+       <small class="text-muted">Category : <%=onedata.category%> &#8942;</small>
+   <%}%> 
+     
+    <%if(typeof onedata.publishedDate !== "undefined" && typeof onedata.updatedDate === "undefined"){%>
+       <small class="text-muted">Published <%=onedata.publishedDate%></small>
+   <%}%> 
+     
+   <%if(typeof onedata.updatedDate !== "undefined"){%>
+       <small class="text-muted">Updated <%=onedata.updatedDate%></small>
+   <%}%>   
+   <small class="text-muted"> &#8942; <i class="bi bi-person-circle"></i> <%=onedata.username%></small>
+  
+   
+   <h2 class="title-marg+">
+       <strong>
+            <%=onedata.title%>
+   </strong>    
+   </h2>
+
+   <p class="lead">
+       <%=onedata.content .substring(0,100).trimEnd() + " ..." %>
+        
+   </p>
+       </a>
     <%});%>
+     
+        </div> <br/><br/>
+        <div class="row">
+    <%records.forEach(function(found){%>
+        <br/>  
+                <div class="col-md-6 postshover">
+                    <a href="/posts/<%=found._id%>">
+                     <% if(typeof found.imageUrl !== "undefined"){%>
+            <img src="/images/<%=found.imageUrl%>" width="500px" height="400px">
+        <%} else {%>
+            <img src="/images/<%=found.imageUrl%>" style="display:none">
+        <%}%><br/>
+
+    
+                <%if(typeof found.category !== "undefined"){%>
+            <small class="text-muted">Category : <%=found.category%> &#8942;</small>
+        <%}%> 
+          
+         <%if(typeof found.publishedDate !== "undefined" && typeof found.updatedDate === "undefined"){%>
+            <small class="text-muted">Published <%=found.publishedDate%></small>
+        <%}%> 
+          
+        <%if(typeof found.updatedDate !== "undefined"){%>
+            <small class="text-muted">Updated <%=found.updatedDate%></small>
+        <%}%>   
+        <small class="text-muted"> &#8942; <i class="bi bi-person-circle"></i> <%=found.username%></small>
+       
+        
+        <h2 class="title-marg+">
+            <strong>
+                 <%=found.title%>
+        </strong>    
+        </h2>
+
+        <p class="lead">
+            <%=found.content.substring(0,100).trimEnd() + " ..." %>
+             
+        </p>
+            </a>
+            
+           <br/><br/>
+                </div>
+            
+        
+       
+       
+    <%});%>
+        </div>
+    </div>
    <%} else {%>
         <h1>No posts Found!</h1>
     <%}%>
 
     
     <% if (pages > 0) { %>
-        <ul>
+        <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
             <% if (current == 1) { %>
-                <li class="disabled"><a>First</a></li>
+                <li class="page-item disabled"><a class="page-link">First</a></li>
             <% } else { %>
-                <li><a href="/?page=1">First</a></li>
+                <li class="page-item"><a href="/?page=1" class="page-link">First</a></li>
             <% } %>
             <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
             <% if (i !== 1) { %>
-                <li class="disabled"><a>...</a></li>
+                <li class="page-item disabled"><a class="page-link">...</a></li>
             <% } %>
             <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
                 <% if (i == current) { %>
-                    <li class="active"><a><%= i %></a></li>
+                    <li class="page-item active"><a class="page-link"><%= i %></a></li>
                 <% } else { %>
-                    <li><a href="/?page=<%= i %>"><%= i %></a></li>
+                    <li class="page-item"><a href="/?page=<%= i %>" class="page-link"><%= i %></a></li>
                 <% } %>
                 <% if (i == Number(current) + 4 && i < pages) { %>
-                    <li class="disabled"><a>...</a></li>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
                 <% } %>
             <% } %>
             <% if (current == pages) { %>
-                <li class="disabled"><a>Last</a></li>
+                <li class="page-item disabled"><a class="page-link">Last</a></li>
             <% } else { %>
-                <li><a href="/?page=<%= pages %>">Last</a></li>
+                <li class="page-item"><a href="/?page=<%= pages %>" class="page-link">Last</a></li>
             <% } %>
         </ul>
+        </nav>
     <% } %>
     
 <%-include("partials/footer")-%>

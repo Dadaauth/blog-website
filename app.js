@@ -10,6 +10,7 @@
     const findOrCreate = require("mongoose-findorcreate");
     const formidable = require('formidable');
     const fs = require("fs");
+const { Console } = require("console");
 
     const app = express();
   
@@ -36,7 +37,7 @@
 
 
     /////connect to mongoose
-    mongoose.connect("mongodb://localhost:27017/blogDB");
+    mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
 //create posts schema
     const blogSchema = new mongoose.Schema({
         userId:  {
@@ -60,6 +61,7 @@
         },
         publishedDate: String, 
         updatedDate: String,    
+        category: String,
     });
 
     /////create users schema
@@ -67,6 +69,7 @@
         username: String,
         email: String,
         password:  String,
+        role: String
     });
 
 
@@ -124,35 +127,46 @@ passport.serializeUser(function(user, cb) {
 
   //get home
     app.get("/", function(req, res){
-        var perPage = 3;
-            var page = req.query.page || 1;
+        var perPage = 10;
+        var page = req.query.page || 1;
         Blog.find({})
+        .sort({$natural:-1})
         .skip((perPage * page) - perPage)
         .limit(perPage)
         .exec(function(err,data){
             if(err){
                 console.log("Error fetching posts!");
             } else {
-                Blog.countDocuments({}).exec((err,count)=>{    
+                Blog.countDocuments({}).exec((err,count)=>{ 
+                    const counted = count - 2;
+                    const randNum = Math.random();   
+                     const rand = Math.floor(randNum * counted);
+                        Blog.find({})
+                        .sort({_id: -1})
+                        .limit(2)
+                        .skip(rand)
+                        .exec(function(err, oneData){  
                if(req.isAuthenticated()){
-                res.render("home", {records: data,  current: page, pages: Math.ceil(count / perPage), authenticated: true, userId: req.user.id});
+                res.render("home", {records: data, onedata: oneData, current: page, pages: Math.ceil(count / perPage), authenticated: true, userId: req.user.id});
                } else {
-                res.render("home", {records: data,  current: page, pages: Math.ceil(count / perPage), authenticated: false,});
+                res.render("home", {records: data, onedata: oneData, current: page, pages: Math.ceil(count / perPage), authenticated: false,});
                }
            
-            });             
+            });      
+         });         
             }         
       
-        });
+        }); 
     });
+ 
 
 
         ///////compose articles
     app.get("/compose", function(req, res){
         if(req.isAuthenticated()){
-            res.render("compose");
+            res.render("compose", {authenticated: true, userId: req.user.id});
         } else {
-            res.render("login", {comeBackUrl: "/compose"});
+            res.render("login", {comeBackUrl: "/compose", authenticated: false});
         }
             
         });
@@ -187,6 +201,7 @@ passport.serializeUser(function(user, cb) {
             const username = req.user.username;
             const title = fields.title; 
             const content = fields.content;
+            const category = fields.category;
             if (typeof files.imageUrl !== "undefined"){
             ////save form data to database
             const imageUrl = files.imageUrl.newFilename;
@@ -196,7 +211,8 @@ passport.serializeUser(function(user, cb) {
                 title: title,
                 imageUrl: imageUrl,
                 content: content,
-                publishedDate: pubDate
+                publishedDate: pubDate,
+                category: category
             });
             blog.save(function(err){
                 if(err){
@@ -212,7 +228,8 @@ passport.serializeUser(function(user, cb) {
                 userId: user_ID,
                 title: title,
                 content: content,
-                publishedDate: pubDate
+                publishedDate: pubDate,
+                category: category
             });
             blog.save(function(err){
                 if(err){
@@ -224,7 +241,7 @@ passport.serializeUser(function(user, cb) {
         }
         });
     } else {
-        res.render("login", {comeBackUrl: "/compose"});
+        res.render("login", {comeBackUrl: "/compose", authenticated: false});
     }
     });
 
@@ -237,10 +254,15 @@ passport.serializeUser(function(user, cb) {
 
     /////////////update articles
     app.get("/update/:articleId", function(req, res){
-        const articleID = req.params.articleId;
+        if(req.isAuthenticated()){
+            const articleID = req.params.articleId;
         Blog.findById({_id: articleID}, function(err, foundPost){
-            res.render("update", {postDetails: foundPost})
+            res.render("update", {postDetails: foundPost, authenticated: true, userId: req.user.id})
         });
+        } else {
+            res.render("login", {comeBackUrl: "/compose", authenticated: false});
+        }
+        
         });
 
     app.post("/update/:articleId", function(req, res){
@@ -273,7 +295,8 @@ passport.serializeUser(function(user, cb) {
             const username = req.user.username;
             const articleID = req.params.articleId;
             const setTitle = fields.title; 
-            const setContent = fields.content;
+            const setContent = fields.content; 
+            const category = fields.category;
             if (typeof files.imageUrl !== "undefined"){
                 ////save form data to database
             const setImageUrl = files.imageUrl.newFilename;   
@@ -290,7 +313,8 @@ passport.serializeUser(function(user, cb) {
                 content: setContent,
                 userId: user_ID,  
                 username: username,
-                updatedDate: updateDate
+                updatedDate: updateDate,
+                category: category
                 }}, function(err, done){
                 if(err){
                     res.send("Error updating document!");
@@ -304,7 +328,8 @@ passport.serializeUser(function(user, cb) {
                     content: setContent,
                     userId: user_ID,
                     username: username,
-                    updatedDate: updateDate
+                    updatedDate: updateDate,
+                    category: category
                   }}, function(err, done){
                     if(err){
                         res.send("Error updating document!");
@@ -316,7 +341,7 @@ passport.serializeUser(function(user, cb) {
             
     });
         } else {
-            res.render("login", {comeBackUrl: "/update/" + req.params.articleId});
+            res.render("login", {comeBackUrl: "/update/" + req.params.articleId, authenticated: false});
         }
     });
 
@@ -330,17 +355,69 @@ passport.serializeUser(function(user, cb) {
     app.get("/posts/:articleId", function(req, res){
         const articleID = req.params.articleId;
         Blog.findById({_id: articleID}, function(err, found){
+            if(req.isAuthenticated()){
+                var authValue = true; 
+                var userId = req.user.id;
+            } else {
+                var authValue = false;
+                var userId = "unknown";
+            }
             if(found){
                 Comment.find({postId:articleID}, function(err, foundComments){         
-                     res.render("post", {postDetail: found, comments:foundComments});          
+                     res.render("post", {postDetail: found, comments:foundComments, authenticated: authValue, userId: userId});          
                 });
                
             } else {
-                res.render("post", {postDetail: undefined, comments:undefined,  errorMsg: "Post has been deleted or does not exist!"});
+                res.render("post", {postDetail: undefined, comments:undefined, authenticated: authValue, userId:userId, errorMsg: "Post has been deleted or does not exist!"});
             }
             
         });
     });
+
+    ////search articles 
+    app.get("/search", function(req, res){
+        
+    });
+    app.post("/search", function(req, res){
+
+        // const query = { $text: { $search: req.body.search } };
+        // // Return only the `title` of each matched document
+        // const projection = {
+        //   _id: 0,
+        //   title: 1,
+        // };
+        // // find documents based on our query and projection
+        // const cursor = Blog.find(query).project(projection);
+        // console.log(cursor);
+
+
+        // Blog.find({title: {$search: req.body.search}})
+        //     // .search({
+        //     //     text: {
+        //     //     query: req.body.search,
+        //     //     path: 'title'
+        //     //     }
+        //     // }) 
+        //     .sort({$natural: -1})
+        //     .exec(function(err, found){
+        //         console.log(found);
+        //     });
+
+
+            exports.getSearch = (req, res, next) => { 
+                const title = req.body.search;
+                Product.find({ title: { $regex: title, $options: "i" } })
+                    .then(title => {
+                        console.log(title);
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    });
+                }
+        });
+    
+
+
 
 
 
@@ -364,7 +441,7 @@ passport.serializeUser(function(user, cb) {
            newComment.save();
            res.redirect("back")
             } else {
-                res.render("login", {comeBackUrl: "/comment/" + req.params.articleId});
+                res.render("login", {comeBackUrl: "/comment/" + req.params.articleId, authenticated: false});
             }
            
         });
@@ -383,7 +460,7 @@ passport.serializeUser(function(user, cb) {
                     }
                 });  
             } else {
-                 res.render("login", {comeBackUrl: "/comment/" + req.params.articleId});
+                 res.render("login", {comeBackUrl: "/comment/" + req.params.articleId, authenticated: false});
             }
         });
        
@@ -398,7 +475,7 @@ passport.serializeUser(function(user, cb) {
                 }
             });
             } else {
-                res.render("login", {comeBackUrl: "/Comment/" + req.params.articleId});
+                res.render("login", {comeBackUrl: "/Comment/" + req.params.articleId, authenticated: false});
             }
         });
 
@@ -428,7 +505,7 @@ passport.serializeUser(function(user, cb) {
                     });
            
             } else {
-                
+                res.render("login", {comeBackUrl: "/reply/" + req.params.articleId,  authenticated: false});
             }
            
         });
@@ -455,7 +532,7 @@ passport.serializeUser(function(user, cb) {
                     }
                 });  
             } else {
-                res.render("login", {comeBackUrl: "/reply/" + req.params.articleId});
+                res.render("login", {comeBackUrl: "/reply/" + req.params.articleId, authenticated: false});
             }
         });
        
@@ -477,7 +554,7 @@ passport.serializeUser(function(user, cb) {
                 }
             });
             } else {
-                res.render("login", {comeBackUrl: "/reply/" + req.params.articleId});
+                res.render("login", {comeBackUrl: "/reply/" + req.params.articleId, authenticated: false});
             }
         });
 
@@ -491,11 +568,14 @@ passport.serializeUser(function(user, cb) {
         const articleID = req.params.articleId;
             Blog.findById({_id: articleID}, function(err, found){
                     /////delete image with articles
-                fs.unlink(__dirname + "/public/images/" + found.imageUrl, (err) => {
+                if(typeof found.imageUrl !== "undefined"){
+                    fs.unlink(__dirname + "/public/images/" + found.imageUrl, (err) => {
                     if (err) {
                         throw err;
                     }           
                 });
+                }
+                
             });
             Blog.findByIdAndDelete({_id: articleID}, function(err){
                 if(!err){
@@ -520,19 +600,27 @@ passport.serializeUser(function(user, cb) {
     
     ///profile area
         app.get("/user/:userId", function(req, res){
+            const perPage = 3;
+            const page = req.query.page || 1;
         if(req.isAuthenticated() && req.params.userId === req.user.id){
-            Blog.find({userId: req.user.id}, function(err, foundPosts){
+            Blog.find({userId: req.user.id})
+                .sort({$natural:-1})
+                .skip((perPage * page) - perPage)
+                .limit(perPage)
+                .exec(function(err, data){
                 if(err){
                     console.log("Error fetching posts!");
                 } else {
-                res.render("admin", {foundPosts : foundPosts});
+                    Blog.countDocuments({userId: req.user.id}).exec((err,count)=>{ 
+                res.render("admin", {records: data,  current: page, pages: Math.ceil(count / perPage), authenticated: true, userId: req.user.id});
+                    });
                 }         
             });
         } else {
             if(req.isAuthenticated() && req.params.userId !== req.user.id){
                 res.redirect("/user/" + req.user.id);
             } else {
-                res.render("login");
+                res.render("login", {authenticated: false});
             }
                
         }
@@ -545,13 +633,12 @@ passport.serializeUser(function(user, cb) {
 
 
     //////Login Page
-        
-
+    
         app.get("/login", function(req, res){
             if(req.isAuthenticated()){
                 res.redirect("back");
             } else{
-                 res.render("login");
+                 res.render("login", {authenticated: false});
             }      
         });
 
@@ -559,28 +646,38 @@ passport.serializeUser(function(user, cb) {
             const user = new User({
                 username: req.body.username,
                 password: req.body.password
-            });
-            req.login(user, function(err){
+                
+            });console.log(req.body.username);
+            User.countDocuments({username: req.body.username}).exec((err,count)=>{ 
+                console.log(count);
+               if(count !== 0){
+                     req.login(user, function(err){
                 if(err){
                     console.log(err);
                 } else {
-                    passport.authenticate("local", { failureRedirect: '/login-err', failureMessage: true })(req, res, function(err){
-                       if(req.body.comeBackUrl){
+                    passport.authenticate("local")
+                    (req, res, function(err){
+                         if(req.body.comeBackUrl){
                         res.redirect(req.body.comeBackUrl);
                        } else {
                         res.redirect("user/" + req.user.id);
                        }
                         
-                   
+                      
                     });
                 }
+            }); 
+                } else {
+                    res.redirect("/login-err");
+                }
             });
+          
         });
        
         ////display error message for login.
         app.get("/login-err", function(req, res){
             const error_msg = "Incorrect User Details";
-            res.render("login", {errorMessage: error_msg});
+            res.render("login", {errorMessage: error_msg, authenticated: false});
         });
 
         /////Register Page
@@ -589,7 +686,7 @@ passport.serializeUser(function(user, cb) {
             if(req.isAuthenticated()){
                 res.redirect("back");
             } else {
-                 res.render("register");
+                 res.render("register", {authenticated: false});
             }
            
         })

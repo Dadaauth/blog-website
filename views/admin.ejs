@@ -1,8 +1,8 @@
 <%-include("partials/header")-%>
 <a href="/logout">Logout</a>
 
-<%let reverse = foundPosts.reverse();%>
-<%reverse.forEach(function(found){%>
+<% if(records.length>0){%>
+    <%records.forEach(function(found){%>
     <h1>
         <%=found.title%>
     </h1>
@@ -20,7 +20,10 @@
 <%}%>
    
 
-    
+<%if(typeof found.category !== "undefined"){%>
+    <span>Category: <%=found.category%></span>
+<%}%> 
+
     <p>
         <%=found.content.substring(0,100).trimEnd() + " ..."%>
     </p>
@@ -33,7 +36,43 @@
             <a href="/update/<%=found._id%>">Update</a>
         </button>
         
-<%});%>
+<%});%> 
+    <%} else {%>
+        <h1>No posts Found!</h1>
+    <%}%>
+
+    <!-- display pagination -->
+    <% if (pages > 0) { %>
+        <ul>
+            <% if (current == 1) { %>
+                <li class="disabled"><a>First</a></li>
+            <% } else { %>
+                <li><a href="/user/<%=userId%>?page=1">First</a></li>
+            <% } %>
+            <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+            <% if (i !== 1) { %>
+                <li class="disabled"><a>...</a></li>
+            <% } %>
+            <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                <% if (i == current) { %>
+                    <li class="active"><a><%= i %></a></li>
+                <% } else { %>
+                    <li><a href="/user/<%=userId%>?page=<%= i %>"><%= i %></a></li>
+                <% } %>
+                <% if (i == Number(current) + 4 && i < pages) { %>
+                    <li class="disabled"><a>...</a></li>
+                <% } %>
+            <% } %>
+            <% if (current == pages) { %>
+                <li class="disabled"><a>Last</a></li>
+            <% } else { %>
+                <li><a href="/user/<%=userId%>?page=<%= pages %>">Last</a></li>
+            <% } %>
+        </ul>
+    <% } %>
+
+
+
         <button><a href="/compose">Add new post</a></button>
         <a href="/"> Go to home</a>
 <%-include("partials/footer")-%>
