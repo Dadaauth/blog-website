@@ -21,7 +21,13 @@ a:hover{
             width: 200px;
         height: 150px;
     
+        }
+        .text-muted{
+            font-size: 10px;
         }   
+        .lead{
+            font-size: 13px;
+        }
     }
 
     @media only screen and (min-width: 600px) {
