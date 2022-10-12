@@ -6,7 +6,7 @@
         <div class="row">
     <%records.forEach(function(found){%>
         <br/>  
-                <div class="col-md-4 col-lg-4 col-sm-6 col-6 postshover">
+                <div class="col-md-4 col-lg-4 col-sm-6 col-12 postshover">
                     <a href="/posts/<%=found._id%>">
                      <% if(typeof found.imageUrl !== "undefined"){%>
             <img src="/images/<%=found.imageUrl%>"  class="image-home">
@@ -14,7 +14,14 @@
             <img src="/images/<%=found.imageUrl%>" style="display:none">
         <%}%><br/>
 
-            <div class="home-content">
+           
+        
+        <h4 class="title-marg">
+            <strong>
+                 <%=found.title%>
+        </strong>    
+        </h4>
+             <div class="home-content">
                   <%if(typeof found.category !== "undefined"){%>
             <small class="text-muted">Category : <%=found.category%> &#8942;</small>
         <%}%> 
@@ -28,19 +35,12 @@
         <%}%>   
         <small class="text-muted"> &#8942; <i class="bi bi-person-circle"></i> <%=found.username%></small>
        
-        
-        <h4 class="title-marg+">
-            <strong>
-                 <%=found.title%>
-        </strong>    
-        </h4>
-
         <p class="lead">
             <%=found.content.substring(0,100).trimEnd() + " ..." %>
              
         </p>
             </a>
-            </div>
+         </div>
               
             
            <br/><br/>
