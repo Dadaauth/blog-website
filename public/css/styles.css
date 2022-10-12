@@ -18,16 +18,16 @@ a:hover{
 
   @media only screen and (max-width: 600px) {
         .image-home{
-            width: 110px;
-        height: 90px;
+            width: 140px;
+        height: 110px;
             float: right;
         }
     
         .text-muted{
-            font-size: 8px;
+            font-size: 12px;
         }   
         .lead{
-            font-size: 10px;
+            font-size: 14px;
         }
         .dist{
             display:none;
@@ -36,7 +36,10 @@ a:hover{
             margin-left: 150px;
         }
         .home-content{
-         /* float: right; */
+
+        }
+        .title-marg{
+            font-size: 25px;
         }
     }
 
