@@ -10,7 +10,6 @@
     const findOrCreate = require("mongoose-findorcreate");
     const formidable = require('formidable');
     const fs = require("fs");
-const { Console } = require("console");
 
     const app = express();
   
@@ -37,7 +36,8 @@ const { Console } = require("console");
 
 
     /////connect to mongoose
-    mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
+    // mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
+    mongoose.connect("mongodb://localhost:27017/blogDB")
     // mongoose.connect("mongodb://localhost:27017/blogDB");
 //create posts schema
     const blogSchema = new mongoose.Schema({
@@ -422,7 +422,7 @@ passport.serializeUser(function(user, cb) {
 
 
 
-    ////////REMEMBER TO ADD EDIT AND DELETE COMMENTS ADD UPDATED DATE ALSO
+
         ///comment system
         app.get("/comment/:articleId", function(req, res){
             res.redirect("/posts/" + req.params.articleId);
