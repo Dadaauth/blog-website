@@ -1,86 +1,135 @@
 <%-include("partials/header")-%>
 
 <%if(typeof postDetail !== "undefined"){%>
+    
+    <div class="article-heading-ali">
+        <p>
+            <a href="/">Home</a>  > 
+            <a href="/"><%=postDetail.category%></a>  >
+            <%=postDetail.title%>
+        </p>
+        <% if(typeof postDetail.imageUrl !== "undefined"){%>
+            <img src="/images/<%=postDetail.imageUrl%>" class="article-img">
+        <%} else {%>
+            <img src="/images/placeholder.jpg" class="article-img">
+        <%}%>
+    
+        <!-- post title, information about the post and the content of the post -->
         <h1>
-                <%=postDetail.title%>
-            </h1>
-            <%if(typeof postDetail.publishedDate !== "undefined"){%>
-                <span>Published <%=postDetail.publishedDate%></span>
-            <%}%> 
-            <%if(typeof postDetail.updatedDate !== "undefined"){%>
-                <span>Updated <%=postDetail.updatedDate%></span>
-            <%}%>   
-            <br/>
-            <% if(typeof postDetail.imageUrl !== "undefined"){%>
-                <img src="/images/<%=postDetail.imageUrl%>" width="100rem">
-            <%} else {%>
-                <img src="/images/<%=postDetail.imageUrl%>" style="display:none" width="25rem">
-            <%}%>
-            <p><%if(typeof postDetail.category !== "undefined"){%>
-                <span>Category: <%=postDetail.category%></span>
-            <%}%> 
-                <%=postDetail.content%>
-            </p>
-            <h2>Comments Below</h2>
-           
-                    <%const reversed = comments.reverse();%>
-                        <%reversed.forEach(function(comments){%>
-                            <hr/>
-                            <div>
-                                <%=comments.username%><br/>
-                                <%if(typeof comments.publishedDate !== "undefined"){%>
-                                    <span>Published <%=comments.publishedDate%></span>
-                                <%}%> 
-                                <%if(typeof comments.updatedDate !== "undefined"){%>
-                                    <span>Updated <%=comments.updatedDate%></span>
-                                <%}%>   
-                                <br/>
-                                <%=comments.comment%>
-                                <h4>Edit Comment</h4>
-                                <form action="/editComment/<%=postDetail._id%>" method="post" autocomplete="off">
-                                    <input type="text" name="editedComment">
-                                    <input type="hidden" name="commentId" value="<%=comments._id%>">
-                                    <button type="submit">Edit</button>
-                                </form>
-                                <h4><a href="/deleteComment/<%=postDetail._id%>/<%=comments._id%>">Delete Comment</a></h4>
-                                <h4>Replies</h4>
-                                <%const commentReplies = comments.reply;%>
-                                <%commentReplies.forEach(function(replies){%>
-                                        <%=replies.username%>
-                                        <br/>
-                                        <%=replies.date%>
-                                        <br/>
-                                        <%=replies.reply%>
-                                        <br/>
-                                        <br/>
-                                        <h4>Edit Reply</h4>
-                                <form action="/editReply/<%=postDetail._id%>" method="post" autocomplete="off">
-                                    <input type="text" name="editedReply">
-                                    <input type="hidden" name="replyId" value="<%=replies._id%>">
-                                    <input type="hidden" name="commentId" value="<%=comments._id%>">
-                                    <button type="submit">Edit</button>
-                                </form>
-                                <h4><a href="/deleteReply/<%=postDetail._id%>/<%=comments._id%>/<%=replies._id%>">Delete Reply</a></h4>
-                                    <%});%>
-                                <form action="/reply/<%=postDetail._id%>" method="post" autocomplete="off">
-                                    <input type="text" name="reply">
-                                    <input type="hidden" name="commentId" value="<%=comments._id%>">
-                                    <button type="submit">reply</button>
-                                </form>
-                            </div>
-                        <br/><br/>
-                        <%});%>
-                <form action="/comment/<%=postDetail._id%>" method="post" autocomplete="off">
-                    <input type="text" name="comment">
-                    <button type="submit">Comment</button>
-                </form>
-           
+            <%=postDetail.title%>
+        </h1>
+        <%if(typeof postDetail.publishedDate !== "undefined"){%>
+            <span>Published <%=postDetail.publishedDate%></span>
+        <%}%> 
+        <%if(typeof postDetail.updatedDate !== "undefined"){%>
+            <span>Updated <%=postDetail.updatedDate%></span>
+        <%}%>   
+        <%if(typeof postDetail.category !== "undefined"){%>
+            <span>Category: <%=postDetail.category%></span>
+        <%}%> </br>
+    </div>
+    <p class="article-content-ali"><%=postDetail.content%></p>
+    <h2 style="margin: 15px;">Comment</h2>
 
-          
-        
+    <!-- Comment Form -->
+    <form action="/comment/<%=postDetail._id%>" method="post" autocomplete="off" class="comment-form">
+        <textarea name="comment" id="" cols="40" rows="7" required></textarea>
+        <button type="submit">Comment</button>
+    </form>
+
+    <%const reversed = comments.reverse();%>
+    <%reversed.forEach(function(comments){%>
+        <hr/>
+        <div class="comment-container">
+            <%=comments.username%><br/>
+            <%if(typeof comments.publishedDate !== "undefined"){%>
+                <span><%=comments.publishedDate%></span>
+            <%}%> 
+            <!-- <%#if(typeof comments.updatedDate !== "undefined"){%>
+                <span>Updated <%#=comments.updatedDate%></span>
+            <%#}%>    -->
+            <br/>
+            <%=comments.comment%>
+            
+            <%const commentReplies = comments.reply;%>
+            <!-- Reply Form -->
+            <button class="reply-open">reply</button>
+            <form action="/reply/<%=postDetail._id%>" method="post" autocomplete="off" class="reply-form">
+                <textarea name="reply" id="" cols="30" rows="4" required></textarea>
+                <input type="hidden" name="commentId" value="<%=comments._id%>">
+                <button type="submit">reply</button>
+            </form>
+            <%if(commentReplies.length > 0){%>
+                <h4>Reply</h4>
+                <%commentReplies.forEach(function(replies){%>
+                    <%=replies.username%>
+                    <br/>
+                    <%=replies.date%>
+                    <br/>
+                    <%=replies.reply%>
+                <%});%>
+            <%}%>
+            
+        </div>
+    <%});%>
+
 
 <%} else if(typeof postDetail === "undefined") {%>
   <h2><%=errorMsg%></h2>
 <%}%>
-    
+<script>
+    const commentsLength = <%=comments.length%>;
+    for(var i = 0; i< commentsLength; i++){
+        const replyButton = document.querySelectorAll(".reply-open")[i];
+        const replyForm = document.querySelectorAll(".reply-form")[i]; 
+        replyForm.style.display = "none";
+        replyButton.addEventListener("click", ()=> {
+            if(replyForm.style.display == "none"){
+                replyForm.style.display = ""
+            }else{
+                replyForm.style.display = "none"
+            }
+        });
+    }
+</script>
 <%-include("partials/footer")-%>
+
+
+
+
+
+
+<!-- 
+
+unknowns::::::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+unknowns:::::::::::::::::::::::
+
+
+    <h4>Edit Comment</h4>
+            <form action="/editComment/<%#=postDetail._id%>" method="post" autocomplete="off">
+                <input type="text" name="editedComment">
+                <input type="hidden" name="commentId" value="<%#=comments._id%>">
+                <button type="submit">Edit</button>
+            </form>
+            <h4><a href="/deleteComment/<%#=postDetail._id%>/<%#=comments._id%>">Delete Comment</a></h4>
+
+            <br/>
+                    <br/>
+                    <h4>Edit Reply</h4>
+            <form action="/editReply/<%#=postDetail._id%>" method="post" autocomplete="off">
+                <input type="text" name="editedReply">
+                <input type="hidden" name="replyId" value="<%#=replies._id%>">
+                <input type="hidden" name="commentId" value="<%#=comments._id%>">
+                <button type="submit">Edit</button>
+            </form>
+            <h4><a href="/deleteReply/<%#=postDetail._id%>/<%#=comments._id%>/<%#=replies._id%>">Delete Reply</a></h4>
+ -->

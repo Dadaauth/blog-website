@@ -1,78 +1,80 @@
 <%-include("partials/header")-%>
-<a href="/logout">Logout</a>
-
+<button class="admin-btn-top"><a href="/logout">Logout</a></button>
+<button class="admin-btn-top"><a href="/compose">Add new post</a></button>
+<button class="admin-btn-top"><a href="/"> Go to home</a></button>
 <% if(records.length>0){%>
-    <%records.forEach(function(found){%>
-    <h1>
-        <%=found.title%>
-    </h1>
-    <%if(typeof found.publishedDate !== "undefined"){%>
-        <span>Published <%=found.publishedDate%></span>
-    <%}%> 
-    <%if(typeof found.updatedDate !== "undefined"){%>
-        <span>Updated <%=found.updatedDate%></span>
-    <%}%>   
-    <br/>
-<% if(typeof found.imageUrl !== "undefined"){%>
-    <img src="/images/<%=found.imageUrl%>" width="25rem">
-<%} else {%>
-    <img src="/images/<%=found.imageUrl%>" style="display:none" width="25rem">
-<%}%>
-   
 
-<%if(typeof found.category !== "undefined"){%>
-    <span>Category: <%=found.category%></span>
-<%}%> 
+    <div class="container">
+        <div class="row">
+            <%records.forEach(function(found){%>
+                <br/>  
+                <div class="col-md-6 col-lg-4 col-sm-12 col-12 articles-alie">
+                    <a href="/posts/<%=found._id%>">
+                        <% if(typeof found.imageUrl !== "undefined"){%>
+                            <img src="/images/<%=found.imageUrl%>"  class="image-home">
+                        <%} else {%>
+                            <img src="/images/placeholder.jpg" class="image-home">
+                        <%}%><br/>
+                        <h4 class="title-marg"><strong><%=found.title%></strong></h4>
+                        <%if(typeof found.publishedDate !== "undefined"){%>
+                            <span>Published <%=found.publishedDate%></span>
+                        <%}%> 
+                        <%if(typeof found.updatedDate !== "undefined"){%>
+                            <span>Updated <%=found.updatedDate%></span>
+                        <%}%>   
+                        <br/>
+                       
+                        <%if(typeof found.category !== "undefined"){%>
+                            <span>Category: <%=found.category%></span>
+                        <%}%> 
+                    </a>
+                    <br/> </br>
+                    <button>
+                        <a href="/delete/<%=found._id%>">Delete</a>
+                    </button>
+                    <button>
+                        <a href="/update/<%=found._id%>">Update</a>
+                    </button>
+                </div>
+            <%});%> 
+        </div>
+    </div>
 
-    <p>
-        <%=found.content.substring(0,100).trimEnd() + " ..."%>
-    </p>
-    <br/>
-        <a href="/posts/<%=found._id%>">Read More</a>
-        <button>
-            <a href="/delete/<%=found._id%>">Delete</a>
-        </button>
-        <button>
-            <a href="/update/<%=found._id%>">Update</a>
-        </button>
-        
-<%});%> 
+    
     <%} else {%>
         <h1>No posts Found!</h1>
     <%}%>
 
     <!-- display pagination -->
-    <% if (pages > 0) { %>
-        <ul>
+    <% if (pages > 1) { %>
+        <nav aria-label="Page navigation" style="margin-top: 40px;">
+        <ul class="pagination justify-content-center">
             <% if (current == 1) { %>
-                <li class="disabled"><a>First</a></li>
+                <li class="page-item disabled"><a class="page-link">First</a></li>
             <% } else { %>
-                <li><a href="/user/<%=userId%>?page=1">First</a></li>
+                <li class="page-item"><a href="/user/<%=userId%>?page=1" class="page-link">First</a></li>
             <% } %>
             <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
             <% if (i !== 1) { %>
-                <li class="disabled"><a>...</a></li>
+                <li class="page-item disabled"><a class="page-link">...</a></li>
             <% } %>
             <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
                 <% if (i == current) { %>
-                    <li class="active"><a><%= i %></a></li>
+                    <li class="page-item active"><a class="page-link"><%= i %></a></li>
                 <% } else { %>
-                    <li><a href="/user/<%=userId%>?page=<%= i %>"><%= i %></a></li>
+                    <li class="page-item"><a href="/user/<%=userId%>?page=<%= i %>" class="page-link"><%= i %></a></li>
                 <% } %>
                 <% if (i == Number(current) + 4 && i < pages) { %>
-                    <li class="disabled"><a>...</a></li>
+                    <li class="page-item disabled"><a class="page-link">...</a></li>
                 <% } %>
             <% } %>
             <% if (current == pages) { %>
-                <li class="disabled"><a>Last</a></li>
+                <li class="page-item disabled"><a class="page-link">Last</a></li>
             <% } else { %>
-                <li><a href="/user/<%=userId%>?page=<%= pages %>">Last</a></li>
+                <li class="page-item"><a href="/user/<%=userId%>?page=<%= pages %>" class="page-link">Last</a></li>
             <% } %>
         </ul>
+        </nav>
     <% } %>
-
-
-
-        <button><a href="/compose">Add new post</a></button>
-        <a href="/"> Go to home</a>
+        
 <%-include("partials/footer")-%>

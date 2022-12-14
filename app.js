@@ -8,6 +8,7 @@
     const passport = require("passport");
     const passportLocalMongoose = require("passport-local-mongoose");
     const findOrCreate = require("mongoose-findorcreate");
+    const MongoStore = require("connect-mongo");
     const formidable = require('formidable');
     const fs = require("fs");
 
@@ -21,24 +22,37 @@
         extended: true
     }));
 
+    /////connect to mongoose
+    // mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
+    mongoose.connect("mongodb://localhost:27017/blogDB");
+
+    // // get mongoose client
+    const mongooseClient = mongoose.connection.getClient();
+
 
     ////use express static for external files like css files
     app.use(express.static("public"));
+    app.use("/posts", express.static("public"));
+    app.use("/user", express.static("public"));
     app.use(session({ /////for session creation needed for authentication.
         secret: process.env.SECRET,
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        name: "blog-website",
+        store: MongoStore.create({  
+            client: mongooseClient,
+            touchAfter: 24 * 3600,
+            crypto: {
+                secret: process.env.SECRET,
+            }
+        })
     }));
 
 
     app.use(passport.initialize());
     app.use(passport.session());
 
-
-    /////connect to mongoose
-    // mongoose.connect("mongodb+srv://authority:4141clement%3F@cluster0.gs6bw9m.mongodb.net/blogDB");
-    mongoose.connect("mongodb://localhost:27017/blogDB")
-    // mongoose.connect("mongodb://localhost:27017/blogDB");
+    
 //create posts schema
     const blogSchema = new mongoose.Schema({
         userId:  {
@@ -191,7 +205,7 @@ passport.serializeUser(function(user, cb) {
         //     form.uploadDir + "/" + file.originalFilename,
         //     () => {
                 
-        //     }
+        //     }       
         //     );
         // });
         form.parse(req, (err, fields, files) => {
@@ -222,7 +236,7 @@ passport.serializeUser(function(user, cb) {
                     res.redirect("/user/" + req.user.id);
                 }
             });
-        } else {
+            } else {
                 ////save form data to database
             const blog = new Blog({
                 username: username,

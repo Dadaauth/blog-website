@@ -4,60 +4,27 @@
 
     <div class="container">
         <div class="row">
-    <%records.forEach(function(found){%>
-        <br/>  
-                <div class="col-md-4 col-lg-4 col-sm-6 col-12 postshover">
+            <%records.forEach(function(found){%>
+                <br/>  
+                <div class="col-md-6 col-lg-4 col-sm-12 col-12 articles-alie">
                     <a href="/posts/<%=found._id%>">
-                     <% if(typeof found.imageUrl !== "undefined"){%>
-            <img src="/images/<%=found.imageUrl%>"  class="image-home">
-        <%} else {%>
-            <img src="/images/<%=found.imageUrl%>" style="display:none">
-        <%}%><br/>
-
-           
-        
-        <h4 class="title-marg">
-            <strong>
-                 <%=found.title%>
-        </strong>    
-        </h4>
-             <div class="home-content">
-                  <%if(typeof found.category !== "undefined"){%>
-            <small class="text-muted">Category : <%=found.category%> &#8942;</small>
-        <%}%> 
-          
-         <%if(typeof found.publishedDate !== "undefined" && typeof found.updatedDate === "undefined"){%>
-            <small class="text-muted">Published <%=found.publishedDate%></small>
-        <%}%> 
-          
-        <%if(typeof found.updatedDate !== "undefined"){%>
-            <small class="text-muted">Updated <%=found.updatedDate%></small>
-        <%}%>   
-        <small class="text-muted"> &#8942; <i class="bi bi-person-circle"></i> <%=found.username%></small>
-       
-        <p class="lead">
-            <%=found.content.substring(0,100).trimEnd() + " ..." %>
-             
-        </p>
-            </a>
-         </div>
-              
-            
-           <br/><br/>
-                </div>
-            
-        
-       
-       
-    <%});%>
+                        <% if(typeof found.imageUrl !== "undefined"){%>
+                            <img src="/images/<%=found.imageUrl%>"  class="image-home">
+                        <%} else {%>
+                            <img src="/images/placeholder.jpg" class="image-home">
+                        <%}%><br/>
+                        <h4 class="title-marg"><strong><%=found.title%></strong></h4>
+                    </a> <br/><br/>
+                </div>  
+            <%});%>
         </div>
     </div>
-   <%} else {%>
-        <h1>No posts Found!</h1>
-    <%}%>
+<%} else {%>
+    <h1>No posts Found!</h1>
+<%}%>
 
     
-    <% if (pages > 0) { %>
+    <% if (pages > 1) { %>
         <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <% if (current == 1) { %>
